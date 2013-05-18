@@ -95,14 +95,13 @@ def propositions(erreur, valeurmin):
 
 def correction(phrase, erreurs): # corrige toutes les erreurs arbitrairement
     for x in range(len(erreurs)):
-        valeurmin = 3
-        results = dict(search(erreurs[x], valeurmin)) # valeurmin est l'écart max de lettres accepté, faudrai le modif en fonction du mot
-        newmot = "[introuvable]"
-
-        for result, valeur in list(results.items()):
-            if(valeur < valeurmin):
-                valeurmin = valeur
-                newmot = result
+        newmot = ""
+        valeurmin = 0
+        while not newmot:
+            valeurmin += 1
+            result = dict(search(erreurs[x], valeurmin))
+            if result:
+                newmot = next(iter(result.keys())) # selectionne le premier index du dictionnaire
         phrase = phrase.replace(erreurs[x], newmot)
     return phrase
  
