@@ -60,7 +60,7 @@ def searchRecursive(node, letter, word, previousRow, results, maxCost):
  
         if word[column - 1] != letter:
             replaceCost = previousRow[column - 1] + 1
-        else:                
+        else:
             replaceCost = previousRow[column - 1]
  
         currentRow.append(min(insertCost, deleteCost, replaceCost))
@@ -75,6 +75,7 @@ def searchRecursive(node, letter, word, previousRow, results, maxCost):
             searchRecursive(node.children[letter], letter, word, currentRow, results, maxCost)
  
 def verification(phrase):
+    phrase = phrase.replace("1", " ").replace("2", " ").replace("3", " ").replace("4", " ").replace("5", " ").replace("6", " ").replace("7", " ").replace("8", " ").replace("9", " ").replace("0", " ") # on ne corrige pas les chiffres
     phrase = phrase.replace("'", " ").replace('"', " ").replace('-', " ") # change les ', " et - en espaces
     phrase = phrase.replace(".", "").replace(",", "").replace(":", "").replace(";", "").replace("!", "").replace("?", "").replace("(", "").replace(")", "") # enlève la ponctuation
     phrase = phrase.split() # transforme la phrase en un array de mots
@@ -161,7 +162,7 @@ class Fenetre(QWidget):
        
         self.setLayout(self.grid)
         self.setFixedSize(800, 600)
-        self.setWindowTitle('Correcteur Orthographique - ISN 2013')    
+        self.setWindowTitle('Correcteur Orthographique - ISN 2013')
         self.show()
 
     def ajout_erreurs(self, texte):
