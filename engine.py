@@ -37,6 +37,7 @@ for word in Dico:
  
 # la fonction search retourne une liste des mots qui ont une ressemblance inférieur ou égale à maxCost
 def search(word, maxCost):
+    word = word.lower()
     currentRow = range(len(word) + 1) # première ligne
     results = []
  
@@ -75,7 +76,7 @@ def searchRecursive(node, letter, word, previousRow, results, maxCost):
             searchRecursive(node.children[letter], letter, word, currentRow, results, maxCost)
  
 def verification(phrase):
-    phrase = phrase.replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").replace("6", "").replace("7", "").replace("8", "").replace("9", "").replace("0", "").replace("'", " ").replace('"', " ").replace('-', " ").replace(".", " ").replace(",", " ").replace(":", " ").replace(";", " ").replace("!", " ").replace("?", " ").replace("(", " ").replace(")", " ").replace("/", " ").replace("\\", " ").replace('’', ' ').replace('`', ' ').replace("«", " ").replace("»", " ").replace("_", " ") # enlève un certain nombre de caractères incorrigibles
+    phrase = phrase.replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").replace("6", "").replace("7", "").replace("8", "").replace("9", "").replace("0", "").replace("#", "").replace("'", " ").replace('"', " ").replace('-', " ").replace(".", " ").replace(",", " ").replace(":", " ").replace(";", " ").replace("!", " ").replace("?", " ").replace("(", " ").replace(")", " ").replace("/", " ").replace("\\", " ").replace('’', ' ').replace('`', ' ').replace("«", " ").replace("»", " ").replace("_", " ") # enlève un certain nombre de caractères incorrigibles
     phrase = phrase.split() # transforme la phrase en un array de mots
     erreurs = []
     for x in range(len(phrase)):
@@ -102,8 +103,26 @@ def correction(phrase, erreurs): # corrige toutes les erreurs arbitrairement
             result = dict(search(erreurs[x], valeurmin))
             if result:
                 newmot = next(iter(result.keys())) # selectionne le premier index du dictionnaire
-        phrase = phrase.replace(erreurs[x], newmot)
+        phrase = remplacer(phrase, erreurs[x], newmot)
     return phrase
+
+def remplacer(texte, erreur, remplacement): # remplace toutes les erreurs par leur correction
+    newremplacement = "" # met une majuscule dans la correction si l'erreur comportait des majuscules
+    if len(remplacement) > len(erreur):
+        for x in range(len(erreur)):
+            if erreur[x].istitle():
+                newremplacement = newremplacement + str(remplacement[x]).upper()
+            else:
+                newremplacement = newremplacement + remplacement[x]
+    else:
+        for x in range(len(remplacement)):
+            if erreur[x].istitle():
+                newremplacement = newremplacement + str(remplacement[x]).upper()
+            else:
+                newremplacement = newremplacement + remplacement[x]
+    texte = " "+texte # on ajoute un espace au début pour contourner les conditions suivantes qui sans l'espace ne réctifirait pas le 1er mot
+    texte = texte.replace(" "+erreur+" ", " "+newremplacement+" ").replace("'"+erreur+" ", "'"+newremplacement+" ").replace('"'+erreur+" ", '"'+newremplacement+" ").replace("("+erreur+" ", "("+newremplacement+" ").replace("-"+erreur+" ", "-"+newremplacement+" ").replace("_"+erreur+" ", "_"+newremplacement+" ").replace("."+erreur+" ", "."+newremplacement+" ").replace("!"+erreur+" ", "!"+newremplacement+" ").replace("?"+erreur+" ", "?"+newremplacement+" ").replace("'"+erreur+"'", "'"+newremplacement+"'").replace('"'+erreur+'"', '"'+newremplacement+'"').replace('('+erreur+')', '('+newremplacement+')').replace("'"+erreur+"'", "'"+newremplacement+"'").replace(" "+erreur+"'", " "+newremplacement+"'").replace(" "+erreur+'"', " "+newremplacement+'"').replace(" "+erreur+")", " "+newremplacement+")").replace(" "+erreur+"-", " "+newremplacement+"-").replace(" "+erreur+"_", " "+newremplacement+"_") # ces conditions sont nécessaires aux remplacements car un mot juste peut contenir l'erreur !
+    return texte[1:] # on retranche tout ce qui est après le premier caractère, donc l'espace mis au début
  
 class Fenetre(QWidget):
  
@@ -187,7 +206,7 @@ class Fenetre(QWidget):
                     if valeur == valeurmin:
                         item = QListWidgetItem(cle)
                         if valeur == 1:
-                            item.setBackground(QColor(34, 187, 34, 190)) # couleur rgba
+                            item.setBackground(QColor(34, 187, 34, 190)) # couleurs rgba
                         if valeur == 2:
                             item.setBackground(QColor(221, 221, 34, 190))
                         elif valeur == 3:
@@ -199,7 +218,7 @@ class Fenetre(QWidget):
             erreur = self.discrimation
             remplacement = self.corrections.selectedItems()[0].text()
             texte = self.origine.toPlainText()
-            texte = texte.replace(" "+erreur+" ", " "+remplacement+" ").replace(erreur+" ", remplacement+" ").replace(" "+erreur, " "+remplacement) # l'espace est nécessaire pour ne pas remplacer l'intérieur d'un autre mot qui contient l'erreur par la correction
+            texte = remplacer(texte, erreur, remplacement)
             self.origine.setText(texte)
 
     def verification_all(self): # ajoute a la liste d'erreurs vidée auparavent toutes les erreurs du texte d'un coup
