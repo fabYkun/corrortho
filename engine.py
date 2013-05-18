@@ -75,9 +75,7 @@ def searchRecursive(node, letter, word, previousRow, results, maxCost):
             searchRecursive(node.children[letter], letter, word, currentRow, results, maxCost)
  
 def verification(phrase):
-    phrase = phrase.replace("1", " ").replace("2", " ").replace("3", " ").replace("4", " ").replace("5", " ").replace("6", " ").replace("7", " ").replace("8", " ").replace("9", " ").replace("0", " ") # on ne corrige pas les chiffres
-    phrase = phrase.replace("'", " ").replace('"', " ").replace('-', " ") # change les ', " et - en espaces
-    phrase = phrase.replace(".", "").replace(",", "").replace(":", "").replace(";", "").replace("!", "").replace("?", "").replace("(", "").replace(")", "") # enlève la ponctuation
+    phrase = phrase.replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").replace("6", "").replace("7", "").replace("8", "").replace("9", "").replace("0", "").replace("'", " ").replace('"', " ").replace('-', " ").replace(".", " ").replace(",", " ").replace(":", " ").replace(";", " ").replace("!", " ").replace("?", " ").replace("(", " ").replace(")", " ").replace("/", " ").replace("\\", " ").replace('’', ' ').replace('`', ' ').replace("«", " ").replace("»", " ").replace("_", " ") # enlève un certain nombre de caractères incorrigibles
     phrase = phrase.split() # transforme la phrase en un array de mots
     erreurs = []
     for x in range(len(phrase)):
@@ -86,11 +84,9 @@ def verification(phrase):
     return erreurs
  
 def recherche(mot):
-    mot = mot.replace(".", "").replace(",", "").replace(":", "").replace(";", "").replace("!", "").replace("?", "").replace("(", "").replace(")", "") # enlève la ponctuation
-    if mot and not mot in Dico:
-        mot = mot.lower() # change le mot en minuscule
-        if not mot in Dico and mot != 'c' and mot != 's' and mot != 'j' and mot != 't' and mot != 'y' and mot != 'd' and mot != 'l' and mot != 'n' and mot != 'm' and mot != 'qu':
-            return False
+    mot = mot.lower() # change le mot en minuscule
+    if not mot in Dico and mot != 'c' and mot != 's' and mot != 'j' and mot != 't' and mot != 'y' and mot != 'd' and mot != 'l' and mot != 'n' and mot != 'm' and mot != 'qu':
+        return False
     return True
  
 def propositions(erreur, valeurmin):
@@ -175,8 +171,9 @@ class Fenetre(QWidget):
  
     # définition des événements
     def verif(self):
-        if(len(self.origine.toPlainText()) > 1 and self.origine.toPlainText()[-1] == ' '): # si la dernière lettre est un espace on vérifie le mot précédent
-            derniermot = self.origine.toPlainText().split()[-1]
+        texte = self.origine.toPlainText()
+        if(len(texte) > 1 and (texte[-1] == ' ' or texte[-1] == '.' or texte[-1] == '!' or texte[-1] == '?' or texte[-1] == "'")): # si la dernière lettre est un espace ou de la ponctuation on vérifie le mot précédent
+            derniermot = texte.split()[-1]
             self.ajout_erreurs(derniermot)
  
     def recherche(self):
@@ -186,10 +183,16 @@ class Fenetre(QWidget):
         if erreur: # on revérifie que c'est bien une erreur (on sait jamais)
             self.discrimation = erreur[0] # erreur[0] car il ne peut pas y avoir plusieurs erreurs pour un même mot
             corrections = propositions(erreur[0], 3)
-            for valeurmin in range(1,3):
+            for valeurmin in range(1,4):
                 for cle, valeur in corrections.items():
                     if valeur == valeurmin:
                         item = QListWidgetItem(cle)
+                        if valeur == 1:
+                            item.setBackground(QColor(34, 187, 34, 190)) # couleur rgba
+                        if valeur == 2:
+                            item.setBackground(QColor(221, 221, 34, 190))
+                        elif valeur == 3:
+                            item.setBackground(QColor(187, 34, 34, 190))
                         self.corrections.addItem(item)
 
     def remplace(self):
@@ -214,9 +217,9 @@ class Fenetre(QWidget):
         newtexte = correction(texte, erreurs)
         self.origine.setText(newtexte)
 
-
     def initialize(self):
         self.erreurs.clear()
+        self.corrections.clear()
 
     def infos(self):
-        message = QMessageBox.information(self, 'À propos du logiciel', " Ce logiciel a été originellement conçu par Fabien Borel, Hugo Valery et Nicolas Rieul en terminale 8 au lycée Cézanne d'Aix-en-provence dans le cadre de l'option ISN nouvellement créee. \n \n Le logiciel est libre (licence Apache), vous trouverez le code source sur GitHub dans les entrées de l'utilisateur twYnn - https://github.com/twYnn/ \n \n http://isn-product.olympe.in", QMessageBox.Ok)
+        message = QMessageBox.information(self, 'À propos du logiciel', " Ce logiciel a été originellement conçu par Fabien Borel, Hugo Valery et Nicolas Rieul en terminale 8 au lycée Cézanne d'Aix-en-provence dans le cadre de l'option ISN nouvellement créée. \n\nMode d'emploi : \n - Tapez vos phrases dans le bloc situé en haut, à chaque espace ou ponctuation, le dernier mot est analysé. S'il n'existe pas, il est signalé en bas à gauche. \n - Pour analyser une erreur et obtenir des corrections il faut double-cliquer dessus. Les corrections proposées sont triées par ordre de pertinence. En vert ce sont les mots qui n'ont qu'un caractère de changé (ou ajouté), en jaune 2 et en rouge 3, les propositions de corrections s'arrêtent à 3 pour des soucis de rapidité. \n\nLe logiciel est libre (licence Apache), vous trouverez le code source sur GitHub dans les entrées de l'utilisateur twYnn - https://github.com/twYnn/ \n \n                                     http://isn-product.olympe.in \n", QMessageBox.Ok)
