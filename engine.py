@@ -11,8 +11,6 @@ print("Construction de la matrice... ")
 # Cette version non compilée requière évidemment python et son module pyQt
 # Ceci est le code principale, mais pour lancer le programme il faut exécuter main.py
 # Nécessite aussi dictionnaire.py
-# Merci de garder cette série de commentaire !
-# Thanks to keep those comments alive !
 
 # L'arborescence contient des matrices de mots, organisés par noeuds : un pour chaque lettre. Chaque noeud est suivit par une ou plusieurs lettres susceptibles de fournir un mot et ainsi de suite
 class Arborescence:
