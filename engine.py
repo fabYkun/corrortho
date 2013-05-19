@@ -112,6 +112,7 @@ def remplacer(texte, erreur, remplacement): # remplace toutes les erreurs par le
                 newremplacement = newremplacement + str(remplacement[x]).upper()
             else:
                 newremplacement = newremplacement + remplacement[x]
+        newremplacement += remplacement[len(erreur):] # sinon il manque des mots
     else:
         for x in range(len(remplacement)):
             if erreur[x].istitle():
