@@ -14,16 +14,6 @@ print("Construction de la matrice... ")
 
 # L'arborescence contient des matrices de mots, organisés par noeuds : un pour chaque lettre. Chaque noeud est suivit par une ou plusieurs lettres susceptibles de fournir un mot et ainsi de suite
 class Arborescence:
-    def __init__(self):
-        self.word = None
-        self.children = {}
-        
-# on cherche la matrice déjà préparée au préalable grace au fichier matrice.py
-with open('matrice.pickle', 'rb') as f:
-    arbre = pickle.load(f)
-
-# L'arborescence contient des matrices de mots, organisés par noeuds : un pour chaque lettre. Chaque noeud est suivit par une ou plusieurs lettres susceptibles de fournir un mot et ainsi de suite
-class Arborescence:
     def __init__(self): # structure d'un noeud (et, indeed, de toute l'arborescence, c'est un peu comme du fractal (sisi))
         self.word = None
         self.children = {}
