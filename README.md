@@ -1,7 +1,7 @@
 Correcteur orthographique instantané
 =========
 
-Codé en python, en utilisant la bibliothèque [Qt](http://fr.wikipedia.org/wiki/PyQt), requière un dictionnaire python rempli de mots, celui utilisé ici (Français), en contient plusieurs centaines de milliers. 
+Codé en python, en utilisant la bibliothèque [Qt](http://fr.wikipedia.org/wiki/PyQt), requière un dictionnaire python rempli de mots, celui utilisé ici (Français), en contient environs 400 000. 
 
 Utilisation
 ------------
