@@ -17,60 +17,67 @@ class Arborescence:
     def __init__(self):
         self.word = None
         self.children = {}
- 
-    def insert(self, word):
-        node = self
+        
+# on cherche la matrice déjà préparée au préalable grace au fichier matrice.py
+with open('matrice.pickle', 'rb') as f:
+    arbre = pickle.load(f)
+
+# L'arborescence contient des matrices de mots, organisés par noeuds : un pour chaque lettre. Chaque noeud est suivit par une ou plusieurs lettres susceptibles de fournir un mot et ainsi de suite
+class Arborescence:
+    def __init__(self): # structure d'un noeud (et, indeed, de toute l'arborescence, c'est un peu comme du fractal (sisi))
+        self.word = None
+        self.children = {}
+
+    def insert(self, word): # pour compléter l'arborescence on injecte les mots un par un (voir la boucle for plus bas)
+        node = self # node prend les attributs de l'arborescence (self), donc son dictionnaire children{} qui contient tous les noeuds
         for letter in word:
             if letter not in node.children:
-                node.children[letter] = Arborescence()
- 
-            node = node.children[letter]
- 
-        node.word = word
- 
+                node.children[letter] = Arborescence() # là, on crée un noeud. Quand je disais que c'était fractal, c'est qu'en fait on reprend la même architecture que l'arborescence et qu'on la place dans ce noeud #inception1
+
+            node = node.children[letter] # là on se place dans le noeud de la lettre "définie" par la boucle for letter in word, la variable node "avance" d'un "pas"
+
+        node.word = word # quand on a fini de créer/se placer dans les noeuds, on donne à la variable "word" (qui était définie dans la structure d'une arborescence/noeud) le mot qui vcient d'etre ajouté
+
 # parcours le dictionnaire et le transpose en arborescence
 arbre = Arborescence()
 for word in Dico:
     arbre.insert(word)
- 
-# la fonction search retourne une liste des mots qui ont une ressemblance inférieur ou égale à maxCost
-def search(word, maxCost):
-    word = word.lower()
-    currentRow = range(len(word) + 1) # première ligne
+
+def search(word, maxCost): # la fonction search retourne une liste des mots qui ont une ressemblance inférieur ou égale à maxCost (même principe que Levenshtein)
+    currentRow = range(len(word) + 1)
     results = []
- 
-    # recherche récursive sur chaque branche de l'arbre (sélectionnées par les noeuds)
-    for letter in arbre.children:
-        searchRecursive(arbre.children[letter], letter, word, currentRow, results, maxCost)
- 
-    return results
- 
-# la fonction searchRecursive est utilisée par search : elle assure la recherche sur plusieurs lignes (noeuds) pour un même mot
+
+    for letter in arbre.children: # là on est parti pour scanner toutes les branches (en commençant par les premiers noeuds) de l'arborescence
+        searchRecursive(arbre.children[letter], letter, word, currentRow, results, maxCost) # c'est là que tout se joue
+
+    return results # voila c'est fini... LOL
+
 def searchRecursive(node, letter, word, previousRow, results, maxCost):
- 
+    # bien comprendre qu'on est actuellement dans un noeud
     columns = len(word) + 1
-    currentRow = [previousRow[0] + 1]
- 
-    # construit une ligne pour la lettre, avec une colonne pour chaque lettre du mot, plus une pour le string vide en colonne 0
-    for column in range(1, columns):
- 
+    currentRow = [previousRow[0] + 1] # row les chemins, là on avance de 1
+
+    # construit un chemin pour la lettre, avec une colonne pour chaque lettre du mot
+    for column in range(1, columns): # calcul théorique de combien nous couterai l'insert/suppr/remplacement d'un caractère par rapport à où on est dans le mot
         insertCost = currentRow[column - 1] + 1
         deleteCost = previousRow[column] + 1
- 
+
         if word[column - 1] != letter:
             replaceCost = previousRow[column - 1] + 1
-        else:
+        else:                
             replaceCost = previousRow[column - 1]
- 
-        currentRow.append(min(insertCost, deleteCost, replaceCost))
- 
+
+        currentRow.append(min(insertCost, deleteCost, replaceCost)) # on ne garde que la distance théorique la moins grande (puisqu'on ne sait pas vraiment, on veut juste éviter d'aller chercher dans un nouveau noeud si on sait déjà que quoi qu'il arrive on ne pourra pas accepter le mot)
+        print (currentRow)
+    print('h')
+
     # si la dernière entrée de la ligne indique que la différence ne peut être supérieure au maximum (maxCost) alors on ajoute le mot
-    if currentRow[-1] <= maxCost and node.word != None:
-        results.append((node.word, currentRow[-1]))
- 
-    # si une entrée dans la ligne est inférieur au max, alors on cherche récursivement chaque branche de l'arbre
+    if currentRow[-1] <= maxCost and node.word != None: # en réalité au premier passage, à part pour la branche "a" ou "y", celle ligne est ignorée et on passe à d'autres noeuds car word n'existe pas
+        results.append((node.word, currentRow[-1])) # on ajoute le mot et son coût levenshteinien
+
+    # si une entrée dans la ligne est inférieur au max, alors on cherche récursivement chaque branche du noeud, généralement le cas au début
     if min(currentRow) <= maxCost:
-        for letter in node.children:
+        for letter in node.children: #inception2, on scanne les branches à partir de ce noeud
             searchRecursive(node.children[letter], letter, word, currentRow, results, maxCost)
  
 def verification(phrase):
