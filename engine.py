@@ -58,8 +58,6 @@ def searchRecursive(node, letter, word, previousRow, results, maxCost):
             replaceCost = previousRow[column - 1]
 
         currentRow.append(min(insertCost, deleteCost, replaceCost)) # on ne garde que la distance théorique la moins grande (puisqu'on ne sait pas vraiment, on veut juste éviter d'aller chercher dans un nouveau noeud si on sait déjà que quoi qu'il arrive on ne pourra pas accepter le mot)
-        print (currentRow)
-    print('h')
 
     # si la dernière entrée de la ligne indique que la différence ne peut être supérieure au maximum (maxCost) alors on ajoute le mot
     if currentRow[-1] <= maxCost and node.word != None: # en réalité au premier passage, à part pour la branche "a" ou "y", celle ligne est ignorée et on passe à d'autres noeuds car word n'existe pas
